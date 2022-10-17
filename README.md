@@ -1,5 +1,5 @@
-# cml_data_explorer
-Explore CML data based on a map view with time slider and click to show individual timeseries
+# CML data explorer
+Explore CML data based on a map view with time slider and click to show individual timeseries. Do all this directly from a Jupyter notebook.
 
 Within some seconds you can view CML data from an `xarray.Dataset` on a map with CML paths and colorcoded dots according to a specific variable. Clicking on a CML paths opens linked time series of defined variables of individual CMLs.
 
