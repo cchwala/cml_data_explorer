@@ -1,3 +1,4 @@
+import numpy as np
 import panel as pn
 import hvplot.xarray
 from holoviews.streams import Selection1D
@@ -44,16 +45,14 @@ def plot(
 
     def plot_cml_ts(index, var_name):
         if not index:
-            i = 0
-            alpha = 0
             label = 'no selection'
+            data = ds_for_ts.isel(cml_id=0)[var_name].astype('float')
+            data.values[:] = np.NaN
         else:
-            i = index[0]
-            alpha = 1
-        data = ds_for_ts.isel(cml_id=i)[var_name].astype('float')
+            data = ds_for_ts.isel(cml_id=index[0])[var_name].astype('float')
         if index:
             label = str(ds_for_ts.isel(cml_id=index[0]).cml_id.values)
-        
+       
         if 'channel_id' in data.dims:
             return hv.NdOverlay(
                 {
@@ -64,11 +63,11 @@ def plot(
                 kdims='channel_id',
             )
         else:
-            return hv.Curve(data).relabel(label).opts(opts.Curve(alpha=alpha))
+            return hv.Curve(data).relabel(label)
     
     curves_ts_var = [
         rasterize(
-            hv.DynamicMap(partial(plot_cml_ts, var_name=ts_var), kdims=[], streams=[stream]).opts(ylim=(50, 100)),
+            hv.DynamicMap(partial(plot_cml_ts, var_name=ts_var), kdims=[], streams=[stream]),#.opts(ylim=(50, 100)),
             #line_width=1,
             #pixel_ratio=2,
             aggregator='any',
