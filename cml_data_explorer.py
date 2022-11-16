@@ -2,6 +2,7 @@ import panel as pn
 import hvplot.xarray
 from holoviews.streams import Selection1D
 from holoviews import opts
+from holoviews.operation.datashader import rasterize
 import holoviews as hv
 from functools import partial
 
@@ -11,6 +12,7 @@ def plot(
     ds_for_ts,
     map_var='rainfall_amount',
     ts_vars=['trsl', 'rainfall_amount'],
+    tiles='OSM',
 ):
     
     ds_cml_for_map.coords['lon_center'] = (ds_cml_for_map.site_a_longitude + ds_cml_for_map.site_b_longitude)/2
@@ -18,7 +20,7 @@ def plot(
     if 'channel_id' in ds_cml_for_map.dims:
         ds_cml_for_map = ds_cml_for_map.isel(channel_id=0)
     
-    if 'time' in ds_cml_for_map.dims:
+    if 'time' in ds_cml_for_map[map_var].dims:
         groupby='time'
     else:
         groupby=None
@@ -34,6 +36,8 @@ def plot(
         height=600,
         hover_cols=['cml_id',],
         tools=['tap', 'hover'],
+        #geo=True,
+        #tiles=tiles,
     )
 
     stream = Selection1D(source=sc)
@@ -63,7 +67,13 @@ def plot(
             return hv.Curve(data).relabel(label).opts(opts.Curve(alpha=alpha))
     
     curves_ts_var = [
-        hv.DynamicMap(partial(plot_cml_ts, var_name=ts_var), kdims=[], streams=[stream]).opts(ylim=(50, 100))
+        rasterize(
+            hv.DynamicMap(partial(plot_cml_ts, var_name=ts_var), kdims=[], streams=[stream]).opts(ylim=(50, 100)),
+            #line_width=1,
+            #pixel_ratio=2,
+            aggregator='any',
+            cmap=['red'],
+        )
         for ts_var in ts_vars
     ]
     
