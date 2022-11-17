@@ -13,6 +13,7 @@ def plot(
     ds_for_ts,
     map_var='rainfall_amount',
     ts_vars=['trsl', 'rainfall_amount'],
+    ts_ylims=[(40, 100), (0, 20)],
     tiles='OSM',
 ):
     
@@ -57,7 +58,7 @@ def plot(
             return hv.NdOverlay(
                 {
                     channel_id: 
-                        hv.Curve(data.sel(channel_id=channel_id)).relabel(label).opts(opts.Curve(alpha=alpha))
+                        hv.Curve(data.sel(channel_id=channel_id)).relabel(label)
                         for channel_id in data.channel_id.values
                 },
                 kdims='channel_id',
@@ -67,13 +68,13 @@ def plot(
     
     curves_ts_var = [
         rasterize(
-            hv.DynamicMap(partial(plot_cml_ts, var_name=ts_var), kdims=[], streams=[stream]),#.opts(ylim=(50, 100)),
+            hv.DynamicMap(partial(plot_cml_ts, var_name=ts_var), kdims=[], streams=[stream]),
             #line_width=1,
             #pixel_ratio=2,
             aggregator='any',
-            cmap=['red'],
-        )
-        for ts_var in ts_vars
+            #cmap=['red'],
+        ).opts(ylim=ts_ylim)
+        for ts_var, ts_ylim in zip(ts_vars, ts_ylims)
     ]
     
     #ts_var2 = hv.DynamicMap(partial(plot_cml_ts, var_name=ts_vars[1]), kdims=[], streams=[stream]).opts(ylim=(-5, 50))
