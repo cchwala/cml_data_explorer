@@ -17,8 +17,8 @@ def plot(
     tiles='OSM',
 ):
     
-    ds_cml_for_map.coords['lon_center'] = (ds_cml_for_map.site_a_longitude + ds_cml_for_map.site_b_longitude)/2
-    ds_cml_for_map.coords['lat_center'] = (ds_cml_for_map.site_a_latitude + ds_cml_for_map.site_b_latitude)/2
+    ds_cml_for_map.coords['lon_center'] = (ds_cml_for_map.site_0_lon + ds_cml_for_map.site_1_lon)/2
+    ds_cml_for_map.coords['lat_center'] = (ds_cml_for_map.site_0_lat + ds_cml_for_map.site_1_lat)/2
     if 'channel_id' in ds_cml_for_map.dims:
         ds_cml_for_map = ds_cml_for_map.isel(channel_id=0)
     
@@ -51,6 +51,7 @@ def plot(
             data.values[:] = np.NaN
         else:
             data = ds_for_ts.isel(cml_id=index[0])[var_name].astype('float')
+
         if index:
             label = str(ds_for_ts.isel(cml_id=index[0]).cml_id.values)
        
@@ -79,8 +80,8 @@ def plot(
     
     #ts_var2 = hv.DynamicMap(partial(plot_cml_ts, var_name=ts_vars[1]), kdims=[], streams=[stream]).opts(ylim=(-5, 50))
     
-    xs = list(zip(ds_cml_for_map.site_a_longitude.values, ds_cml_for_map.site_b_longitude.values))
-    ys = list(zip(ds_cml_for_map.site_a_latitude.values, ds_cml_for_map.site_b_latitude.values))
+    xs = list(zip(ds_cml_for_map.site_0_lon.values, ds_cml_for_map.site_1_lon.values))
+    ys = list(zip(ds_cml_for_map.site_0_lat.values, ds_cml_for_map.site_1_lat.values))
     cml_lines = hv.Segments(data=[(x[0], y[0], x[1], y[1]) for x, y in zip(xs, ys)]).opts(color='k')
 
     fig = pn.Row(
