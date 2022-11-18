@@ -36,7 +36,7 @@ def plot(
         cmap='turbo',
         width=500,
         height=600,
-        hover_cols=['cml_id',],
+        hover_cols=['cml_id', 'length', 'frequency'],
         tools=['tap', 'hover'],
         #geo=True,
         #tiles=tiles,
