@@ -47,8 +47,12 @@ def plot(
     def plot_cml_ts(index, var_name):
         if not index:
             label = 'no selection'
-            data = ds_for_ts.isel(cml_id=0)[var_name].astype('float')
-            data.values[:] = np.NaN
+            # Akward way to produce something that datashader will render as invisible.
+            # It will produce data for t_0, t_1 and t_-1 with [value, NaN, value]. 
+            data = ds_for_ts.isel(cml_id=0, time=[0, 1, -1])[var_name].astype('float').copy()
+            values = data.values.copy()
+            values[1] = np.NaN
+            data.values = values 
         else:
             data = ds_for_ts.isel(cml_id=index[0])[var_name].astype('float')
 
